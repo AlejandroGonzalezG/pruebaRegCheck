@@ -1,0 +1,42 @@
+version: '3'
+services:
+  frontend:
+    container_name: vue3
+    build: ./frontend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./frontend:/app
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    networks:
+      - regcheck
+  backend:
+    container_name: express
+    build: ./backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+    networks:
+      - regcheck
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - regcheck
+networks:
+  regcheck:
+    driver: bridge
+volumes:
+  mongo-data:
+    driver: local
